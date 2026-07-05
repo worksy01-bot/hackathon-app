@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HackHub</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a18;min-height:100vh}
+.nav{display:flex;align-items:center;border-bottom:1px solid #e5e5e0;padding:0 1.5rem;background:#fff;position:sticky;top:0;z-index:100}
+.nav-logo{font-size:15px;font-weight:600;padding:0.75rem 1rem 0.75rem 0;margin-right:0.5rem;border-right:1px solid #e5e5e0;white-space:nowrap}
+.nav-link{padding:0.75rem 1rem;font-size:14px;color:#888;cursor:pointer;border-bottom:2px solid transparent;transition:color 0.15s;text-decoration:none;white-space:nowrap}
+.nav-link:hover{color:#1a1a18}
+.nav-link.active{color:#1a1a18;border-bottom-color:#1a1a18}
+.page{display:none;padding:1.5rem;max-width:820px;margin:0 auto}
+.page.active{display:block}
+
+.hero{padding:2rem 0 1.5rem}
+.hero h1{font-size:24px;font-weight:600;margin-bottom:0.5rem}
+.hero p{font-size:14px;color:#666;line-height:1.6}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:1.5rem}
+@media(max-width:600px){.card-grid{grid-template-columns:1fr}}
+.main-card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.25rem;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s}
+.main-card:hover{border-color:#bbb;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.main-card .icon{font-size:22px;color:#4a90d9;margin-bottom:0.75rem}
+.main-card h3{font-size:14px;font-weight:600;margin-bottom:0.25rem}
+.main-card p{font-size:12px;color:#888;line-height:1.5}
+
+.page-title{font-size:18px;font-weight:600;margin-bottom:1.25rem}
+.filter-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
+.filter-btn{padding:4px 14px;font-size:12px;border:1px solid #e5e5e0;border-radius:20px;background:#fff;cursor:pointer;color:#666;transition:all 0.15s}
+.filter-btn.active{background:#1a1a18;color:#fff;border-color:#1a1a18}
+
+.h-card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.25rem;cursor:pointer;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;transition:all 0.15s;gap:12px}
+.h-card:hover{border-color:#bbb;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.h-card-title{font-size:14px;font-weight:600;margin-bottom:6px}
+.h-card-meta{font-size:12px;color:#888;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-ongoing{background:#e6f7ef;color:#1a7a4a}
+.badge-ended{background:#f0f0ee;color:#666}
+.badge-upcoming{background:#fff3e0;color:#b86e00}
+.badge-tag{background:#e8f0fb;color:#2d5fa6}
+
+.back-btn{font-size:12px;color:#888;cursor:pointer;margin-bottom:1rem;display:inline-flex;align-items:center;gap:4px;transition:color 0.15s;background:none;border:none;padding:0}
+.back-btn:hover{color:#1a1a18}
+.detail-header{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid #e5e5e0}
+.detail-header h2{font-size:20px;font-weight:600;margin-bottom:0.5rem}
+.detail-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:#888;align-items:center}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.stat-box{background:#f9f9f7;border-radius:8px;padding:0.75rem 1rem;text-align:center}
+.stat-box .val{font-size:18px;font-weight:600}
+.stat-box .lbl{font-size:11px;color:#888;margin-top:2px}
+
+.section-tabs{display:flex;border-bottom:1px solid #e5e5e0;margin-bottom:1.25rem;overflow-x:auto}
+.sec-tab{padding:0.6rem 1rem;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.15s}
+.sec-tab.active{color:#1a1a18;border-bottom-color:#1a1a18}
+.sec-content{display:none}
+.sec-content.active{display:block}
+
+.info-block{background:#f9f9f7;border-radius:8px;padding:1rem;margin-bottom:10px;font-size:13px;line-height:1.7;color:#444}
+.notice-list{list-style:none;padding:0}
+.notice-list li{font-size:13px;color:#555;padding:6px 0;border-bottom:1px solid #f0f0ee;display:flex;gap:8px}
+.notice-list li::before{content:"•";color:#aaa;flex-shrink:0}
+
+.schedule-item{padding:10px 0;border-bottom:1px solid #f0f0ee;display:flex;gap:16px;align-items:flex-start}
+.schedule-date{font-size:11px;color:#aaa;min-width:140px;padding-top:1px}
+.schedule-name{font-size:13px}
+
+.eval-item{padding:10px 0;border-bottom:1px solid #f0f0ee;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.eval-bar-wrap{flex:1;margin-left:16px;height:4px;background:#e5e5e0;border-radius:2px}
+.eval-bar-fill{height:4px;background:#4a90d9;border-radius:2px}
+
+.prize-item{padding:10px 0;border-bottom:1px solid #f0f0ee;font-size:13px;display:flex;justify-content:space-between}
+
+.team-card{background:#f9f9f7;border:1px solid #e5e5e0;border-radius:8px;padding:1rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.team-card-left{flex:1}
+.team-card-left h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.team-card-left p{font-size:12px;color:#666;line-height:1.5}
+.team-card-left .looking{font-size:11px;color:#4a90d9;margin-top:4px}
+.outline-btn{font-size:12px;padding:5px 14px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;color:#1a1a18;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+.outline-btn:hover{background:#f0f0ee}
+
+.submit-guide{background:#f9f9f7;border-radius:8px;padding:1rem;margin-bottom:1rem}
+.submit-guide p{font-size:13px;color:#555;margin-bottom:6px;font-weight:500}
+.submit-guide ul{list-style:none;padding:0}
+.submit-guide ul li{font-size:12px;color:#666;padding:3px 0;display:flex;gap:6px}
+.submit-guide ul li::before{content:"→";color:#aaa}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 10px;font-size:13px;border:1px solid #e5e5e0;border-radius:6px;background:#fff;color:#1a1a18;outline:none;transition:border-color 0.15s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:#4a90d9}
+.form-group textarea{min-height:70px;resize:vertical}
+
+.lb-table{width:100%;font-size:13px;border-collapse:collapse}
+.lb-table th{text-align:left;padding:8px 0;border-bottom:1px solid #e5e5e0;color:#888;font-weight:500;font-size:12px}
+.lb-table td{padding:9px 0;border-bottom:1px solid #f5f5f3;vertical-align:top}
+.lb-rank{font-weight:600;width:36px}
+.lb-score{font-weight:600;color:#1a1a18;text-align:right}
+.lb-breakdown{font-size:11px;color:#aaa;margin-top:2px}
+.lb-artifacts{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.lb-artifact-link{font-size:11px;color:#4a90d9;text-decoration:none;display:flex;align-items:center;gap:2px}
+.lb-artifact-link:hover{text-decoration:underline}
+
+.rank-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.rank-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0ee;gap:12px;font-size:13px}
+.rank-num{width:32px;text-align:center;font-weight:600;color:#888}
+.rank-num.top{color:#4a90d9}
+.rank-name{flex:1;font-weight:500}
+.rank-pts{font-weight:600}
+
+.camp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+.camp-card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.25rem;margin-bottom:10px}
+.camp-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:12px}
+.camp-card-header h4{font-size:14px;font-weight:600}
+.camp-card-sub{font-size:12px;color:#666;line-height:1.5;margin-bottom:10px}
+.camp-card-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.open-true{font-size:11px;font-weight:600;color:#1a7a4a}
+.open-false{font-size:11px;font-weight:600;color:#aaa}
+.member-count{font-size:11px;color:#888}
+
+.create-form{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.25rem;margin-top:12px}
+.create-form h4{font-size:14px;font-weight:600;margin-bottom:1rem}
+
+.primary-btn{padding:7px 18px;font-size:13px;background:#1a1a18;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500;transition:opacity 0.15s;display:inline-flex;align-items:center;gap:6px}
+.primary-btn:hover{opacity:0.85}
+
+.empty{text-align:center;padding:2.5rem;color:#aaa;font-size:13px;line-height:1.8}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+.link-btn{font-size:12px;color:#4a90d9;text-decoration:none;display:inline-flex;align-items:center;gap:3px}
+.link-btn:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo"><i class="ti ti-terminal-2"></i> HackHub</span>
+  <a class="nav-link active" onclick="nav('main')">메인</a>
+  <a class="nav-link" onclick="nav('hackathons')">해커톤</a>
+  <a class="nav-link" onclick="nav('camp')">팀 모집</a>
+  <a class="nav-link" onclick="nav('rankings')">랭킹</a>
+</nav>
+<div id="toast" class="toast"></div>
+
+<!-- MAIN -->
+<div id="page-main" class="page active">
+  <div class="hero">
+    <h1>해커톤을 함께 만들어가세요</h1>
+    <p>해커톤을 탐색하고, 팀을 구성하고, 실력을 겨루세요.</p>
+  </div>
+  <div class="card-grid">
+    <div class="main-card" onclick="nav('hackathons')">
+      <div class="icon"><i class="ti ti-rocket"></i></div>
+      <h3>해커톤 보기</h3>
+      <p>진행 중이거나 예정된 해커톤을 탐색하세요</p>
+    </div>
+    <div class="main-card" onclick="nav('camp')">
+      <div class="icon"><i class="ti ti-users"></i></div>
+      <h3>팀 찾기</h3>
+      <p>함께할 팀원을 모집하거나 팀에 합류하세요</p>
+    </div>
+    <div class="main-card" onclick="nav('rankings')">
+      <div class="icon"><i class="ti ti-trophy"></i></div>
+      <h3>랭킹 보기</h3>
+      <p>참여자 전체 순위와 포인트를 확인하세요</p>
+    </div>
+  </div>
+</div>
+
+<!-- HACKATHONS LIST -->
+<div id="page-hackathons" class="page">
+  <div class="page-title">해커톤 목록</div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterH(this,'all')">전체</button>
+    <button class="filter-btn" onclick="filterH(this,'ongoing')">진행 중</button>
+    <button class="filter-btn" onclick="filterH(this,'upcoming')">예정</button>
+    <button class="filter-btn" onclick="filterH(this,'ended')">종료</button>
+  </div>
+  <div id="h-list"></div>
+</div>
+
+<!-- DETAIL -->
+<div id="page-detail" class="page">
+  <button class="back-btn" onclick="nav('hackathons')"><i class="ti ti-arrow-left"></i> 목록으로</button>
+  <div class="detail-header">
+    <h2 id="d-title"></h2>
+    <div class="detail-meta" id="d-meta"></div>
+  </div>
+  <div class="stat-row" id="d-stats"></div>
+  <div class="section-tabs" id="d-tabs"></div>
+  <div id="d-sections"></div>
+</div>
+
+<!-- RANKINGS -->
+<div id="page-rankings" class="page">
+  <div class="rank-header">
+    <div class="page-title" style="margin:0">글로벌 랭킹</div>
+    <div class="filter-row" style="margin:0">
+      <button class="filter-btn active" onclick="filterR(this,'all')">전체</button>
+      <button class="filter-btn" onclick="filterR(this,'30')">30일</button>
+      <button class="filter-btn" onclick="filterR(this,'7')">7일</button>
+    </div>
+  </div>
+  <div id="rank-list" style="margin-top:1rem"></div>
+</div>
+
+<!-- CAMP -->
+<div id="page-camp" class="page">
+  <div class="camp-header">
+    <div class="page-title" style="margin:0">팀원 모집</div>
+    <button class="primary-btn" onclick="toggleCreate()"><i class="ti ti-plus"></i> 팀 생성</button>
+  </div>
+  <div class="filter-row" id="camp-filter-row">
+    <button class="filter-btn active" onclick="filterCamp(this,'all')">전체</button>
+  </div>
+  <div id="create-form-wrap" style="display:none">
+    <div class="create-form">
+      <h4>새 팀 만들기</h4>
+      <div class="form-group"><label>팀명 *</label><input id="f-name" placeholder="예) 404found"></div>
+      <div class="form-group"><label>소개 *</label><textarea id="f-desc" placeholder="팀 소개와 목표를 입력하세요"></textarea></div>
+      <div class="form-group"><label>연결 해커톤</label>
+        <select id="f-hackathon"><option value="">-- 선택 안 함 --</option></select>
+      </div>
+      <div class="form-group"><label>모집 포지션</label><input id="f-looking" placeholder="예) Frontend, Designer"></div>
+      <div class="form-group"><label>팀원 수</label><input id="f-members" type="number" min="1" max="10" value="1" style="width:80px"></div>
+      <div class="form-group"><label>연락처 링크 (오픈카톡/폼)</label><input id="f-contact" placeholder="https://open.kakao.com/..."></div>
+      <button class="primary-btn" onclick="createTeam()">팀 생성하기</button>
+    </div>
+  </div>
+  <div id="camp-list" style="margin-top:1rem"></div>
+</div>
+
+<script>
+var LS={
+  get:function(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}},
+  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+/* ── 기본 데이터 (예시자료 JSON 기반) ── */
+var defaultHackathons=[
+  {slug:'aimers-8-model-lite',title:'Aimers 8기 : 모델 경량화 온라인 해커톤',status:'ended',
+   tags:['LLM','Compression','vLLM'],
+   submissionDeadline:'2026-02-25T10:00:00+09:00',endAt:'2026-02-26T10:00:00+09:00',
+   links:{rules:'https://example.com/public/rules/aimers8',faq:'https://example.com/public/faq/aimers8'},
+   sections:{
+     overview:{summary:'제한된 평가 환경에서 모델의 성능과 추론 속도를 함께 최적화합니다.',teamPolicy:{allowSolo:true,maxTeamSize:5}},
+     info:{notice:['제출 마감 이후 추가 제출은 불가합니다.','평가 환경은 고정이며, 제출물은 별도 설치 없이 실행 가능해야 합니다.']},
+     eval:{metricName:'FinalScore',description:'성능과 속도를 종합한 점수(세부 산식은 규정 참고).',limits:{maxRuntimeSec:1200,maxSubmissionsPerDay:5}},
+     schedule:{milestones:[{name:'리더보드 제출 마감',at:'2026-02-25T10:00:00+09:00'},{name:'대회 종료',at:'2026-02-26T10:00:00+09:00'}]},
+     prize:{items:[{place:'1st',amountKRW:3000000},{place:'2nd',amountKRW:1500000},{place:'3rd',amountKRW:800000}]},
+     submit:{allowedArtifactTypes:['zip'],guide:['제출물은 규정에 맞는 단일 zip 파일로 업로드합니다.','업로드 후 \'제출\' 버튼을 눌러야 리더보드에 반영됩니다.'],submissionItems:[{key:'zip',title:'제출 파일 (zip)',format:'url'}]},
+     leaderboard:{note:'Public 리더보드는 제출 마감 시점 기준으로 고정될 수 있습니다.'}
+   }
+  },
+  {slug:'monthly-vibe-coding-2026-02',title:'월간 해커톤 : 바이브 코딩 개선 AI 아이디어 공모전 (2026.02)',status:'ongoing',
+   tags:['Idea','GenAI','Workflow'],
+   submissionDeadline:'2026-03-03T10:00:00+09:00',endAt:'2026-03-09T10:00:00+09:00',
+   links:{rules:'https://example.com/public/rules/vibe202602',faq:'https://example.com/public/faq/vibe202602'},
+   sections:{
+     overview:{summary:'바이브 코딩 환경을 AI로 개선하는 아이디어를 공모합니다.',teamPolicy:{allowSolo:true,maxTeamSize:4}},
+     info:{notice:['아이디어 제안서 형식으로 제출합니다.','팀 단위 또는 개인 참가 모두 가능합니다.']},
+     eval:{metricName:'FinalScore',description:'참가자·심사위원 투표 가중 합산',scoreSource:'vote',scoreDisplay:{breakdown:[{key:'participant',label:'참가자',weightPercent:30},{key:'judge',label:'심사위원',weightPercent:70}]}},
+     schedule:{milestones:[{name:'접수 시작',at:'2026-02-01T10:00:00+09:00'},{name:'제출 마감',at:'2026-03-03T10:00:00+09:00'},{name:'대회 종료',at:'2026-03-09T10:00:00+09:00'}]},
+     prize:{items:[{place:'1st',amountKRW:2000000},{place:'2nd',amountKRW:1000000}]},
+     submit:{allowedArtifactTypes:['text','url','pdf'],guide:['아이디어 제안서를 PDF 또는 URL로 제출합니다.'],submissionItems:[{key:'plan',title:'아이디어 제안서',format:'text_or_url'},{key:'pdf',title:'PDF 첨부 (선택)',format:'pdf_url'}]},
+     leaderboard:{note:'아이디어 해커톤의 점수는 투표 결과를 기반으로 표시됩니다.'}
+   }
+  },
+  {slug:'daker-handover-2026-03',title:'긴급 인수인계 해커톤: 명세서만 보고 구현하라',status:'upcoming',
+   tags:['VibeCoding','Web','Vercel','Handover'],
+   submissionDeadline:'2026-03-30T10:00:00+09:00',endAt:'2026-04-27T10:00:00+09:00',
+   links:{rules:'https://example.com/public/rules/daker-handover-202603',faq:'https://example.com/public/faq/daker-handover-202603'},
+   sections:{
+     overview:{summary:'기능 명세서만 남기고 사라진 개발자의 문서를 기반으로 바이브 코딩을 통해 웹서비스를 구현·배포하는 해커톤입니다.',teamPolicy:{allowSolo:true,maxTeamSize:5}},
+     info:{notice:['예시 자료 외 데이터는 제공되지 않습니다.','더미 데이터/로컬 저장소(localStorage 등)를 활용해 구현하세요.','배포 URL은 외부에서 접속 가능해야 하며 심사 기간 동안 접근 가능해야 합니다.','외부 API/외부 DB를 쓰는 경우에도 심사자가 별도 키 없이 확인 가능해야 합니다.']},
+     eval:{metricName:'FinalScore',description:'참가팀/심사위원 투표 점수를 가중치로 합산한 최종 점수',scoreSource:'vote',scoreDisplay:{breakdown:[{key:'participant',label:'참가자',weightPercent:30},{key:'judge',label:'심사위원',weightPercent:70}]}},
+     schedule:{milestones:[{name:'접수/기획서 제출 기간',at:'2026-03-04T10:00:00+09:00'},{name:'접수/기획서 제출 마감',at:'2026-03-30T10:00:00+09:00'},{name:'최종 웹링크 제출 마감',at:'2026-04-06T10:00:00+09:00'},{name:'최종 솔루션 PDF 제출 마감',at:'2026-04-13T10:00:00+09:00'},{name:'1차 투표평가 시작',at:'2026-04-13T12:00:00+09:00'},{name:'1차 투표평가 마감',at:'2026-04-17T10:00:00+09:00'},{name:'2차 내부평가 종료',at:'2026-04-24T23:59:00+09:00'},{name:'최종 결과 발표',at:'2026-04-27T10:00:00+09:00'}]},
+     prize:{items:[{place:'1st',amountKRW:5000000},{place:'2nd',amountKRW:2000000},{place:'3rd',amountKRW:1000000}]},
+     submit:{allowedArtifactTypes:['text','url','pdf'],guide:['기획서 → 웹링크 → PDF를 단계별로 제출합니다.','배포 URL은 외부에서 접속 가능해야 하며 심사 기간 동안 접근 가능해야 합니다.','PPT는 PDF로 변환하여 제출합니다.'],submissionItems:[{key:'plan',title:'기획서 (1차 제출)',format:'text_or_url'},{key:'web',title:'최종 웹링크',format:'url'},{key:'pdf',title:'최종 솔루션 PDF',format:'pdf_url'}]},
+     leaderboard:{note:'아이디어 해커톤의 점수(score)는 투표 결과를 기반으로 표시됩니다.'}
+   }
+  }
+];
+
+var defaultTeams=[
+  {teamCode:'T-ALPHA',hackathonSlug:'aimers-8-model-lite',name:'Team Alpha',isOpen:true,memberCount:3,lookingFor:['Backend','ML Engineer'],intro:'추론 최적화/경량화 실험을 함께 진행할 팀원을 찾습니다.',contact:{type:'link',url:'https://open.kakao.com/o/example1'},createdAt:'2026-02-20T11:00:00+09:00'},
+  {teamCode:'T-BETA',hackathonSlug:'monthly-vibe-coding-2026-02',name:'PromptRunners',isOpen:true,memberCount:1,lookingFor:['Frontend','Designer'],intro:'프롬프트 품질 점수화 + 개선 가이드 UX를 기획합니다.',contact:{type:'link',url:'https://forms.gle/example2'},createdAt:'2026-02-18T18:30:00+09:00'},
+  {teamCode:'T-HANDOVER-01',hackathonSlug:'daker-handover-2026-03',name:'404found',isOpen:true,memberCount:3,lookingFor:['Frontend','Designer'],intro:'명세서 기반으로 기본 기능을 빠르게 완성하고 UX 확장을 노립니다.',contact:{type:'link',url:'https://open.kakao.com/o/example3'},createdAt:'2026-03-04T11:00:00+09:00'},
+  {teamCode:'T-HANDOVER-02',hackathonSlug:'daker-handover-2026-03',name:'LGTM',isOpen:false,memberCount:5,lookingFor:[],intro:'기획서-구현-문서화를 깔끔하게 맞추는 방향으로 진행합니다.',contact:{type:'link',url:'https://forms.gle/example4'},createdAt:'2026-03-05T09:20:00+09:00'}
+];
+
+var defaultLeaderboards={
+  'aimers-8-model-lite':{updatedAt:'2026-02-26T10:00:00+09:00',entries:[
+    {rank:1,teamName:'Team Alpha',score:0.7421,submittedAt:'2026-02-24T21:05:00+09:00'},
+    {rank:2,teamName:'Team Gamma',score:0.7013,submittedAt:'2026-02-25T09:40:00+09:00'}
+  ]},
+  'daker-handover-2026-03':{updatedAt:'2026-04-17T10:00:00+09:00',entries:[
+    {rank:1,teamName:'404found',score:87.5,submittedAt:'2026-04-13T09:58:00+09:00',scoreBreakdown:{participant:82,judge:90},artifacts:{webUrl:'https://404found.vercel.app',pdfUrl:'https://example.com/404found-solution.pdf',planTitle:'404found 기획서'}},
+    {rank:2,teamName:'LGTM',score:84.2,submittedAt:'2026-04-13T09:40:00+09:00',scoreBreakdown:{participant:79,judge:88},artifacts:{webUrl:'https://lgtm-hack.vercel.app',pdfUrl:'https://example.com/lgtm-solution.pdf',planTitle:'LGTM 기획서'}}
+  ]}
+};
+
+var defaultRankings=[
+  {nick:'Team Alpha',points:4820},{nick:'404found',points:3950},{nick:'PromptRunners',points:3720},
+  {nick:'LGTM',points:3100},{nick:'Team Gamma',points:2890},{nick:'CodeNinja',points:2450},
+  {nick:'hackpro',points:1980},{nick:'프론트퀸',points:1760},{nick:'solidity_s',points:1520},{nick:'데이터도사',points:1280}
+];
+
+var hackathons=LS.get('hh2_hackathons')||defaultHackathons;
+var teams=LS.get('hh2_teams')||defaultTeams;
+var leaderboards=LS.get('hh2_lb')||defaultLeaderboards;
+var rankings=defaultRankings;
+var submits=LS.get('hh2_submits')||{};
+
+function save(){LS.set('hh2_hackathons',hackathons);LS.set('hh2_teams',teams);LS.set('hh2_lb',leaderboards);LS.set('hh2_submits',submits);}
+
+var curHFilter='all',curRankPeriod='all',curCampFilter='all',curDetail=null;
+
+/* ── 유틸 ── */
+function statusLabel(s){return{ongoing:'진행 중',ended:'종료',upcoming:'예정'}[s]||s;}
+function statusBadgeClass(s){return{ongoing:'badge-ongoing',ended:'badge-ended',upcoming:'badge-upcoming'}[s]||'badge-ended';}
+function fmtDate(iso){if(!iso)return'';var d=new Date(iso);return d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');}
+function fmtDatetime(iso){if(!iso)return'';var d=new Date(iso);return fmtDate(iso)+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
+function fmtKRW(n){return'₩'+Number(n).toLocaleString();}
+
+/* ── 네비게이션 ── */
+function nav(page,slug){
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  var links=document.querySelectorAll('.nav-link');
+  var map={main:0,hackathons:1,camp:2,rankings:3,detail:1};
+  if(map[page]!==undefined) links[map[page]].classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  if(page==='detail'&&slug){curDetail=slug;renderDetail(slug);document.getElementById('page-detail').classList.add('active');}
+  else{
+    document.getElementById('page-'+page).classList.add('active');
+    if(page==='hackathons') renderHList(curHFilter);
+    if(page==='camp') renderCamp(curCampFilter);
+    if(page==='rankings') renderRankings(curRankPeriod);
+  }
+  window.scrollTo(0,0);
+}
+
+/* ── 해커톤 목록 ── */
+function renderHList(f){
+  curHFilter=f;
+  var list=document.getElementById('h-list');
+  var filtered=hackathons.filter(h=>f==='all'||h.status===f);
+  if(!filtered.length){list.innerHTML='<div class="empty"><i class="ti ti-mood-empty" style="font-size:28px;display:block;margin-bottom:8px"></i>해당하는 해커톤이 없습니다.</div>';return;}
+  list.innerHTML=filtered.map(h=>`
+    <div class="h-card" onclick="nav('detail','${h.slug}')">
+      <div style="flex:1">
+        <div class="h-card-title">${h.title}</div>
+        <div class="h-card-meta">
+          <span><i class="ti ti-calendar" style="font-size:12px"></i> 마감 ${fmtDate(h.submissionDeadline)}</span>
+          ${h.tags.map(t=>`<span class="badge badge-tag">${t}</span>`).join('')}
+        </div>
+      </div>
+      <span class="badge ${statusBadgeClass(h.status)}" style="flex-shrink:0;margin-top:2px">${statusLabel(h.status)}</span>
+    </div>`).join('');
+}
+function filterH(btn,f){document.querySelectorAll('#page-hackathons .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHList(f);}
+
+/* ── 상세 ── */
+function renderDetail(slug){
+  var h=hackathons.find(x=>x.slug===slug);if(!h)return;
+  var s=h.sections;
+  var teamCount=teams.filter(t=>t.hackathonSlug===slug).length;
+  var prizeCount=s.prize?s.prize.items.length:0;
+
+  document.getElementById('d-title').textContent=h.title;
+  document.getElementById('d-meta').innerHTML=`
+    <span class="badge ${statusBadgeClass(h.status)}">${statusLabel(h.status)}</span>
+    <span>제출 마감 ${fmtDatetime(h.submissionDeadline)}</span>
+    ${h.tags.map(t=>`<span class="badge badge-tag">${t}</span>`).join('')}`;
+  document.getElementById('d-stats').innerHTML=`
+    <div class="stat-box"><div class="val">${teamCount}</div><div class="lbl">등록 팀</div></div>
+    <div class="stat-box"><div class="val">${prizeCount}</div><div class="lbl">수상 부문</div></div>
+    <div class="stat-box"><div class="val">${s.overview.teamPolicy?s.overview.teamPolicy.maxTeamSize:'-'}</div><div class="lbl">최대 팀원</div></div>`;
+
+  var tabs=['개요','안내','평가','일정','상금','팀(캠프)','제출','리더보드'];
+  document.getElementById('d-tabs').innerHTML=tabs.map((t,i)=>`<div class="sec-tab ${i===0?'active':''}" onclick="switchTab(this,${i})">${t}</div>`).join('');
+
+  /* 개요 */
+  var sec0=`<div class="info-block">${s.overview.summary}</div>
+    <table style="font-size:13px;border-collapse:collapse;width:100%">
+      <tr><td style="color:#888;padding:7px 0;border-bottom:1px solid #f0f0ee;width:130px">솔로 참가</td><td style="padding:7px 0;border-bottom:1px solid #f0f0ee">${s.overview.teamPolicy.allowSolo?'가능':'불가'}</td></tr>
+      <tr><td style="color:#888;padding:7px 0;border-bottom:1px solid #f0f0ee">최대 팀원</td><td style="padding:7px 0;border-bottom:1px solid #f0f0ee">${s.overview.teamPolicy.maxTeamSize}명</td></tr>
+      <tr><td style="color:#888;padding:7px 0">규정/FAQ</td><td style="padding:7px 0">
+        ${h.links.rules?`<a href="${h.links.rules}" target="_blank" class="link-btn"><i class="ti ti-external-link" style="font-size:11px"></i> 규정</a>`:''}
+        ${h.links.faq?`<a href="${h.links.faq}" target="_blank" class="link-btn" style="margin-left:10px"><i class="ti ti-external-link" style="font-size:11px"></i> FAQ</a>`:''}
+      </td></tr>
+    </table>`;
+
+  /* 안내 */
+  var sec1=`<ul class="notice-list">${s.info.notice.map(n=>`<li>${n}</li>`).join('')}</ul>`;
+
+  /* 평가 */
+  var evalBreakdown='';
+  if(s.eval.scoreDisplay&&s.eval.scoreDisplay.breakdown){
+    evalBreakdown=s.eval.scoreDisplay.breakdown.map(b=>`
+      <div class="eval-item"><span>${b.label}</span>
+        <div class="eval-bar-wrap"><div class="eval-bar-fill" style="width:${b.weightPercent}%"></div></div>
+        <span style="font-weight:600;margin-left:12px;min-width:36px;text-align:right">${b.weightPercent}%</span>
+      </div>`).join('');
+  } else if(s.eval.limits){
+    evalBreakdown=`<table style="font-size:13px;border-collapse:collapse;width:100%">
+      <tr><td style="color:#888;padding:7px 0;border-bottom:1px solid #f0f0ee;width:160px">최대 실행시간</td><td style="padding:7px 0;border-bottom:1px solid #f0f0ee">${s.eval.limits.maxRuntimeSec}초</td></tr>
+      <tr><td style="color:#888;padding:7px 0">일일 최대 제출</td><td style="padding:7px 0">${s.eval.limits.maxSubmissionsPerDay}회</td></tr>
+    </table>`;
+  }
+  var sec2=`<div class="info-block" style="margin-bottom:12px"><strong style="font-size:13px">${s.eval.metricName}</strong><p style="margin-top:4px;font-size:13px;color:#555">${s.eval.description}</p></div>${evalBreakdown}`;
+
+  /* 일정 */
+  var sec3=s.schedule.milestones.map(m=>`
+    <div class="schedule-item">
+      <span class="schedule-date">${fmtDatetime(m.at)}</span>
+      <span class="schedule-name">${m.name}</span>
+    </div>`).join('');
+
+  /* 상금 */
+  var sec4=s.prize.items.map(p=>`
+    <div class="prize-item"><span>${p.place}</span><span style="font-weight:600">${fmtKRW(p.amountKRW)}</span></div>`).join('');
+
+  /* 팀 */
+  var campTeams=teams.filter(t=>t.hackathonSlug===slug);
+  var sec5=(campTeams.length?campTeams.map(t=>`
+    <div class="team-card">
+      <div class="team-card-left">
+        <h4>${t.name} <span style="font-size:11px;color:#aaa;font-weight:400">${t.memberCount}명</span></h4>
+        <p>${t.intro}</p>
+        ${t.lookingFor.length?`<div class="looking">모집: ${t.lookingFor.join(', ')}</div>`:''}
+      </div>
+      ${t.isOpen?`<button class="outline-btn" onclick="joinTeam('${t.name}','${(t.contact&&t.contact.url)||''}')">참여 요청</button>`:'<span style="font-size:12px;color:#aaa;flex-shrink:0">모집 마감</span>'}
+    </div>`).join(''):'<div class="empty">이 해커톤에 등록된 팀이 없습니다.</div>')
+    +`<button class="outline-btn" style="margin-top:12px;width:100%;text-align:center" onclick="nav('camp')">+ 팀 만들러 가기</button>`;
+
+  /* 제출 */
+  var guideHtml=s.submit.guide?`<div class="submit-guide"><p>제출 안내</p><ul>${s.submit.guide.map(g=>`<li>${g}</li>`).join('')}</ul></div>`:'';
+  var formHtml=s.submit.submissionItems?s.submit.submissionItems.map(item=>`
+    <div class="form-group">
+      <label>${item.title}</label>
+      <input id="si-${item.key}" placeholder="${item.format==='url'?'https://...':item.format==='pdf_url'?'PDF URL 또는 파일 링크':'텍스트 또는 URL'}">
+    </div>`).join(''):`<div class="form-group"><label>제출 파일/링크</label><input id="si-main" placeholder="URL 또는 파일 링크"></div>`;
+  var sec6=guideHtml+formHtml+`<button class="primary-btn" style="margin-top:8px" onclick="submitWork('${slug}')">제출하기</button>`;
+
+  /* 리더보드 */
+  var lb=leaderboards[slug];
+  var sec7='';
+  if(lb&&lb.entries.length){
+    var note=s.leaderboard.note?`<p style="font-size:12px;color:#aaa;margin-bottom:10px">${s.leaderboard.note}</p>`:'';
+    var rows=lb.entries.map(e=>{
+      var breakdown=e.scoreBreakdown?`<div class="lb-breakdown">참가자 ${e.scoreBreakdown.participant} / 심사위원 ${e.scoreBreakdown.judge}</div>`:'';
+      var artifacts='';
+      if(e.artifacts){
+        var links=[];
+        if(e.artifacts.webUrl) links.push(`<a href="${e.artifacts.webUrl}" target="_blank" class="lb-artifact-link"><i class="ti ti-world" style="font-size:11px"></i> 웹</a>`);
+        if(e.artifacts.pdfUrl) links.push(`<a href="${e.artifacts.pdfUrl}" target="_blank" class="lb-artifact-link"><i class="ti ti-file-type-pdf" style="font-size:11px"></i> PDF</a>`);
+        if(links.length) artifacts=`<div class="lb-artifacts">${links.join('')}</div>`;
+      }
+      return`<tr>
+        <td class="lb-rank">${e.rank===1?'🥇':e.rank===2?'🥈':e.rank===3?'🥉':e.rank}</td>
+        <td><div>${e.teamName}</div>${breakdown}${artifacts}</td>
+        <td class="lb-score">${e.score}</td>
+        <td style="font-size:11px;color:#aaa;text-align:right;vertical-align:top">${fmtDatetime(e.submittedAt)}</td>
+      </tr>`;}).join('');
+    sec7=note+`<table class="lb-table"><thead><tr><th style="width:36px">순위</th><th>팀명</th><th style="text-align:right">점수</th><th style="text-align:right;width:110px">제출일시</th></tr></thead><tbody>${rows}</tbody></table>
+      ${lb.updatedAt?`<p style="font-size:11px;color:#aaa;margin-top:8px">업데이트: ${fmtDatetime(lb.updatedAt)}</p>`:''}`;
+  } else {
+    sec7='<div class="empty">아직 제출된 결과가 없습니다.</div>';
+  }
+
+  var sections=[sec0,sec1,sec2,sec3,sec4,sec5,sec6,sec7];
+  document.getElementById('d-sections').innerHTML=sections.map((s,i)=>`<div class="sec-content ${i===0?'active':''}" id="sec${i}">${s}</div>`).join('');
+}
+
+function switchTab(el,i){
+  document.querySelectorAll('#d-tabs .sec-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#d-sections .sec-content').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');document.getElementById('sec'+i).classList.add('active');
+}
+
+function submitWork(slug){
+  var h=hackathons.find(x=>x.slug===slug);
+  if(!h)return;
+  var items=h.sections.submit.submissionItems||[{key:'main'}];
+  var filled=items.filter(item=>{var el=document.getElementById('si-'+item.key);return el&&el.value.trim();});
+  if(!filled.length){showToast('제출 내용을 입력해주세요.');return;}
+  submits[slug]=submits[slug]||{};
+  filled.forEach(item=>{submits[slug][item.key]=document.getElementById('si-'+item.key).value.trim();});
+  save();showToast('제출 완료!');
+  switchTab(document.querySelectorAll('#d-tabs .sec-tab')[7],7);
+}
+
+function joinTeam(name,url){
+  if(url&&url.startsWith('http')) window.open(url,'_blank');
+  else showToast(name+'에 참여 요청을 보냈습니다.');
+}
+
+/* ── 랭킹 ── */
+function renderRankings(period){
+  curRankPeriod=period;
+  var mul=period==='7'?0.28:period==='30'?0.62:1;
+  document.getElementById('rank-list').innerHTML=rankings.map((r,i)=>`
+    <div class="rank-row">
+      <span class="rank-num ${i<3?'top':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span>
+      <span class="rank-name">${r.nick}</span>
+      <span class="rank-pts">${Math.round(r.points*mul).toLocaleString()} pts</span>
+    </div>`).join('');
+}
+function filterR(btn,p){document.querySelectorAll('#page-rankings .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderRankings(p);}
+
+/* ── 캠프 ── */
+function renderCampFilters(){
+  var row=document.getElementById('camp-filter-row');
+  var allSlugs=[...new Set(teams.map(t=>t.hackathonSlug).filter(Boolean))];
+  row.innerHTML=`<button class="filter-btn ${curCampFilter==='all'?'active':''}" onclick="filterCamp(this,'all')">전체</button>`
+    +allSlugs.map(slug=>{var h=hackathons.find(x=>x.slug===slug);return`<button class="filter-btn ${curCampFilter===slug?'active':''}" onclick="filterCamp(this,'${slug}')">${h?h.title.substring(0,14)+'…':slug}</button>`;}).join('');
+}
+
+function renderCamp(filter){
+  if(filter!==undefined) curCampFilter=filter;
+  renderCampFilters();
+  var sel=document.getElementById('f-hackathon');
+  if(sel) sel.innerHTML='<option value="">-- 선택 안 함 --</option>'+hackathons.map(h=>`<option value="${h.slug}">${h.title}</option>`).join('');
+  var filtered=teams.filter(t=>curCampFilter==='all'||t.hackathonSlug===curCampFilter);
+  var list=document.getElementById('camp-list');
+  if(!filtered.length){list.innerHTML='<div class="empty">등록된 팀이 없습니다.</div>';return;}
+  list.innerHTML=filtered.map(t=>{
+    var h=hackathons.find(x=>x.slug===t.hackathonSlug);
+    return`<div class="camp-card">
+      <div class="camp-card-header">
+        <div>
+          <h4>${t.name}</h4>
+          ${h?`<div style="font-size:11px;color:#aaa;margin-top:2px">${h.title}</div>`:''}
+        </div>
+        <span class="badge badge-tag" style="flex-shrink:0">${t.memberCount}명</span>
+      </div>
+      <div class="camp-card-sub">${t.intro}</div>
+      <div class="camp-card-footer">
+        <span class="${t.isOpen?'open-true':'open-false'}">${t.isOpen?'● 모집 중':'● 모집 마감'}</span>
+        ${t.lookingFor.length?`<span style="font-size:12px;color:#4a90d9">${t.lookingFor.join(', ')}</span>`:''}
+        ${t.isOpen&&t.contact&&t.contact.url?`<a href="${t.contact.url}" target="_blank" class="link-btn">연락하기 <i class="ti ti-external-link" style="font-size:11px"></i></a>`:''}
+      </div>
+    </div>`;}).join('');
+}
+function filterCamp(btn,f){curCampFilter=f;document.querySelectorAll('#camp-filter-row .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCamp(f);}
+
+function toggleCreate(){
+  var w=document.getElementById('create-form-wrap');
+  w.style.display=w.style.display==='none'?'block':'none';
+  renderCamp(curCampFilter);
+}
+
+function createTeam(){
+  var name=document.getElementById('f-name').value.trim();
+  var desc=document.getElementById('f-desc').value.trim();
+  if(!name||!desc){showToast('팀명과 소개는 필수입니다.');return;}
+  var looking=document.getElementById('f-looking').value.trim().split(',').map(s=>s.trim()).filter(Boolean);
+  var mc=parseInt(document.getElementById('f-members').value)||1;
+  var contact=document.getElementById('f-contact').value.trim();
+  var code='T-'+Date.now();
+  teams.unshift({teamCode:code,hackathonSlug:document.getElementById('f-hackathon').value,name,isOpen:true,memberCount:mc,lookingFor:looking,intro:desc,contact:{type:'link',url:contact},createdAt:new Date().toISOString()});
+  save();
+  ['f-name','f-desc','f-looking','f-contact'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-members').value='1';
+  document.getElementById('create-form-wrap').style.display='none';
+  renderCamp(curCampFilter);showToast('팀이 생성되었습니다!');
+}
+
+/* ── 토스트 ── */
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* ── 초기화 ── */
+renderHList('all');renderRankings('all');renderCamp('all');
+</script>
+</body>
+</html>
